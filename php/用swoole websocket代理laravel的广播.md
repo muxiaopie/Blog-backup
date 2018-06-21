@@ -4,9 +4,9 @@
 
 ​	其实这篇文章应该4月份就应该写的，但是囿于懒惰一直拖到现在，直到今天有个朋友问起swoole的websocket，而且恰好最近在写一个接口通信是全部基于websocket的spa后台的开源项目。我才想起这篇悬而未决的文章。
 
-​         即时通行对于现在web开发来说必不可少。比如一些实时消息和广播。其实laravel框架自己带有基于事件的广播系统，但是如果要求系统的实时性的话，需要利用一些其他的服务或者框架，比如官方推荐的pusher，虽然简单方便好用，但免费版本还有有一些限制。再如laravel提供的laravel-echo-server其实是用nodejs写的，这其实提高了项目的运维成本。php作为一个非常驻内存的语言，写起websocket其实挺蛋疼的，所以我上面那个开源项目是基于python写的。因为写起来方便快捷。好在php有swoole这样的一个重新定义了php的开源项目。
+​         即时通行对于现在web开发来说必不可少。比如一些实时消息和广播。其实laravel框架自己带有基于事件的广播系统，但是如果要求系统的实时性的话，需要利用一些其他的服务或者框架，比如官方推荐的pusher，虽然简单方便好用，但免费版本还有有一些限制。再如laravel提供的laravel-echo-server其实是用nodejs写的，这其实提高了项目的运维成本。php作为一个非常驻内存的语言，写起websocket其实挺蛋疼的，所以我上面那个开源项目是基于python写的。因为写起来方便快捷。好在php有swoole这样一个重新定义了php的开源项目。
 
-​	laravel的广播其实基于事件的，我们可以先参考官方文档，你必须先注册必须先注册 `App\Providers\BroadcastServiceProvider` ，然后定义一个事件定义一个事件，比如我定义了一个message的事件，让其继承`ShouldBroadcast`接口。源码如下
+​	laravel的广播其实基于事件的，我们可以先参考官方文档，你必须先注册 `App\Providers\BroadcastServiceProvider` ，然后定义一个事件，比如我定义了一个message的事件，让其继承`ShouldBroadcast`接口。源码如下
 
 ```php
 <?php
@@ -46,7 +46,7 @@ class Message implements ShouldBroadcast
 }
 ```
 
-​	其实官方默认的广播驱动式log，比如我们可以尝试一下。
+​	其实官方默认的广播驱动式log，便于调试，我们可以尝试一下。
 
 ```php
 Route::get('/', function () {
@@ -60,7 +60,7 @@ Route::get('/', function () {
 
 
 
-​	这时候我们刷新页面，然后打开你的日志文件。这时候不能发现你的记录
+​	这时候我们刷新页面，然后打开你的日志文件。可以发现你的记录
 
 ```
 [2018-06-08 14:53:44] local.INFO: Broadcasting [App\Events\Message] on channels [message] with payload:
@@ -72,7 +72,7 @@ Route::get('/', function () {
 }  
 ```
 
-​	当然了，我们最终要实现的还是要用其他的驱动，比如官方推荐的pusher，真的是简单好用。那么我们尝试着将驱动换成redis试试。进入redis-cli然后订阅所有频道的消息 ，然后刷新页面。我们不难发现屏幕上打印这样的信息
+​	当然了，我们最终要实现的还是要用其他的驱动，比如官方推荐的pusher简单好用。那么我们尝试着将驱动换成redis试试。进入redis-cli然后订阅所有频道的消息 ，然后刷新页面。我们不难发现屏幕上打印这样的信息
 
 ```
 127.0.0.1:6379> PSUBSCRIBE *
